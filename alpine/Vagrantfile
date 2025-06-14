@@ -1,0 +1,51 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Alpine Linux Vagrantfile for ARM-based MacBook Pro using QEMU provider
+# Alpine Linux is a lightweight, security-oriented distribution
+
+Vagrant.configure("2") do |config|
+  # Use Generic Alpine Linux ARM64 box
+  # Note: Generic boxes provide ARM64 support via libvirt/qemu provider
+  config.vm.box = "generic/alpine318"
+
+  # Disable automatic box update checking
+  config.vm.box_check_update = false
+
+  # Configure the QEMU provider
+  config.vm.provider "qemu" do |qe|
+    # Use ARM64 architecture (native to Apple Silicon)
+    qe.arch = "aarch64"
+
+    # Use the virt machine type optimized for ARM64 with HVF acceleration
+    qe.machine = "virt,accel=hvf,highmem=off"
+
+    # Use Cortex-A72 CPU (compatible ARM64 processor)
+    qe.cpu = "cortex-a72"
+
+    # Configure memory - Alpine is lightweight, 1GB is sufficient
+    qe.memory = "1G"
+
+    # Configure CPU cores
+    qe.smp = "cpus=2,sockets=1,cores=2,threads=1"
+
+    # Use virtio network device for better performance
+    qe.net_device = "virtio-net-pci"
+
+    # SSH port configuration
+    qe.ssh_port = "50023"
+
+    # Enable SSH port auto-correction if port conflicts occur
+    qe.ssh_auto_correct = true
+  end
+
+  # Disable default /vagrant synced folder
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  # Optional: Install common packages
+  # config.vm.provision "shell", inline: <<-SHELL
+  #   apk update
+  #   apk upgrade
+  #   apk add curl wget git vim htop bash
+  # SHELL
+end
