@@ -1,0 +1,58 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile for ARM-based MacBook Pro using QEMU provider
+# Tested with Apple Silicon M1/M2/M3 chips
+
+Vagrant.configure("2") do |config|
+  # Use an ARM64-compatible Ubuntu box
+  # This box is specifically built for ARM64 architecture
+  config.vm.box = "perk/ubuntu-2204-arm64"
+
+  # Disable automatic box update checking
+  config.vm.box_check_update = false
+
+  # Configure the QEMU provider
+  config.vm.provider "qemu" do |qe|
+    # Use ARM64 architecture (native to Apple Silicon)
+    qe.arch = "aarch64"
+
+    # Use the virt machine type optimized for ARM64 with HVF acceleration
+    # HVF (Hypervisor.framework) provides hardware acceleration on macOS
+    qe.machine = "virt,accel=hvf,highmem=off"
+
+    # Use Cortex-A72 CPU (compatible ARM64 processor)
+    qe.cpu = "cortex-a72"
+
+    # Configure memory (adjust as needed)
+    qe.memory = "2G"
+
+    # Configure CPU cores
+    qe.smp = "cpus=2,sockets=1,cores=2,threads=1"
+
+    # Use virtio network device for better performance
+    qe.net_device = "virtio-net-pci"
+
+    # SSH port configuration (QEMU provider uses different port)
+    qe.ssh_port = "50022"
+
+    # Enable SSH port auto-correction if port conflicts occur
+    qe.ssh_auto_correct = true
+  end
+
+  # Disable default /vagrant synced folder since it can be problematic with QEMU
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  # Optional: Configure port forwarding
+  # Uncomment and modify as needed for your applications
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
+  # config.vm.network "forwarded_port", guest: 3000, host: 3000
+
+  # Optional: Basic provisioning script
+  # Uncomment to run basic system updates on first boot
+  # config.vm.provision "shell", inline: <<-SHELL
+  #   apt-get update
+  #   apt-get upgrade -y
+  #   apt-get install -y curl wget git vim htop
+  # SHELL
+end
