@@ -15,9 +15,10 @@ then use `cd` to the linux distro directory you want to use, and run `vagrant up
 
 ```
 cd ubuntu
-vagrant up
-# ...
-vagrant ssh
+vagrant up && vagrant ssh
 $ uname -a
 Linux ubuntu 5.15.0-76-generic #83-Ubuntu SMP Thu Jun 15 19:21:56 UTC 2023 aarch64 aarch64 aarch64 GNU/Linux
+
+vagrant halt           # to stop
+vagrant destroy        # to completely remove
 ```

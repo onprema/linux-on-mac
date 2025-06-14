@@ -1,0 +1,49 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Arch Linux Vagrantfile for ARM-based MacBook Pro using QEMU provider
+# Using Generic Arch Linux box with ARM64 support
+
+Vagrant.configure("2") do |config|
+  # Use Generic Arch Linux box that supports ARM64
+  config.vm.box = "generic/arch"
+
+  # Disable automatic box update checking
+  config.vm.box_check_update = false
+
+  # Configure the QEMU provider
+  config.vm.provider "qemu" do |qe|
+    # Use ARM64 architecture (native to Apple Silicon)
+    qe.arch = "aarch64"
+
+    # Use the virt machine type optimized for ARM64 with HVF acceleration
+    qe.machine = "virt,accel=hvf,highmem=off"
+
+    # Use Cortex-A72 CPU (compatible ARM64 processor)
+    qe.cpu = "cortex-a72"
+
+    # Configure memory - Arch needs a bit more for package management
+    qe.memory = "2G"
+
+    # Configure CPU cores
+    qe.smp = "cpus=2,sockets=1,cores=2,threads=1"
+
+    # Use virtio network device for better performance
+    qe.net_device = "virtio-net-pci"
+
+    # SSH port configuration
+    qe.ssh_port = "50025"
+
+    # Enable SSH port auto-correction if port conflicts occur
+    qe.ssh_auto_correct = true
+  end
+
+  # Disable default /vagrant synced folder
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  # Optional: Update system and install common packages
+  # config.vm.provision "shell", inline: <<-SHELL
+  #   pacman -Syu --noconfirm
+  #   pacman -S --noconfirm curl wget git vim htop base-devel
+  # SHELL
+end
